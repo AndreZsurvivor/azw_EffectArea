@@ -1,0 +1,24 @@
+EffectDef {
+ Emitors {
+  EmitorDef emitor1 {
+   ShapeType Cone
+   ConeAngle 360 0 1
+   MaxNum 41
+   BirthRate 20
+   LocalTransform 0
+   Material "{CB7AF4FD8ACBFDFC}graphics/particles/materials/glow/glow1.emat"
+   RandomAngle 1
+   Velocity 20
+   Wind 0
+   AnimOnce 0
+   LifeTime 2
+   Color {
+    0 1 0.462 0 1 1 1 0
+   }
+   Alpha {
+    0 0 0.15337 0.81646 0.27808 1 0.9024 1 0.98683 0 1 0
+   }
+   EffectTime 1
+  }
+ }
+}

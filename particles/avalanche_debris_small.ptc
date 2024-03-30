@@ -1,0 +1,166 @@
+EffectDef {
+ Emitors {
+  EmitorDef smoke_middle_normal_01 {
+   ShapeType Ellipse
+   ShapeSize 20 1 100
+   ConeAngle 0 0 0
+   MaxNum 10
+   BirthRate 1
+   BirthRateRND 1
+   BirthRateVel 1
+   Offset 0 -0.29607 8.22545
+   Material "{17F1336FEF157B35}graphics/particles/materials/smoke/smoke_dust_01_em_spooky.emat"
+   CenterY -0.35
+   ScaleY 0.813
+   SizeMultiplier 75
+   SizeRND 25
+   RandomRotDir 1
+   RotMultiplier 1
+   VelAngle 0
+   RandomAngle 0
+   Sort 1
+   Velocity 0.2
+   VelocityRND 0.2
+   AirResistance 10
+   AirResistanceRND 0
+   GravityMultiply 0.1
+   Wind 0
+   AnimOnce 0
+   AnimFPS 30
+   LifetimeByAnim 0
+   RandomFrame 1
+   LifeTime 5
+   LifeTimeRND 10
+   Color {
+    0 0.1266 0.1329 0.2025 0.1898 0.2975 0.3038 0.3354 1 0.1835 0.2025 0.2152
+   }
+   Alpha {
+    0 0 0.02455 0 0.07901 1 0.71727 0.65823 0.97521 0.10759 1 0
+   }
+   RotationSpeed {
+    0 0 0.60937 0.1962 0.89881 0.15823 1 0.0443
+   }
+   Size {
+    0 0.39241 0.15802 0.66456 1 1
+   }
+   ColorMast {
+    0 1 1 1 0.4389 0.8481 0.6835 0.7785 0.5256 0.7468 0.7468 0.7468 1 0.8734 0.8734 0.8608
+   }
+   RotationSpeedMast {
+    0 1 1 1
+   }
+  }
+  EmitorDef debris_small {
+   ShapeType Box
+   ShapeSize 40 10 0.2
+   BirthRate 0.3
+   BirthRateRND 5
+   BirthRateVel 100
+   Offset 0 0.27255 2.69729
+   Angles -179.99998 85.99998 -0
+   Material "{118F069016CE1546}graphics/particles/materials/enviroment/stones.emat"
+   ScaleX 0.214
+   ScaleY 0.132
+   SizeRND 2
+   RotMultiplier 600
+   Velocity 25
+   VelocityRND 1
+   AirResistance 0.2
+   GravityMultiply 0.3
+   LifetimeByAnim 0
+   LifeTime 1
+   LifeTimeRND 0
+   Color {
+    0 0.1266 0.1076 0.1582 1 0.0633 0.0253 0.057
+   }
+   Alpha {
+    0 0 0.05114 0.99367 0.91335 0.98101 1 0
+   }
+   RotationSpeed {
+    0 1 1 1
+   }
+   Size {
+    0 1 0.87642 0.82278 1 0.00633
+   }
+   EffectTime 1
+   Repeat 1
+   VelocityMast {
+    0 0.6519 0.28125 1 0.74006 0.81646 1 0.75316
+   }
+  }
+  EmitorDef debris_big {
+   ShapeType Box
+   ShapeSize 20 10 0.2
+   MaxNum 10
+   BirthRate 5
+   Offset 0 0.42093 7.68865
+   Angles 179.99998 88.00011 -0.00002
+   LocalTransform 0
+   Material "{214D9C1A37B3A94A}graphics/particles/materials/smoke/smoke_debris_01.emat"
+   SizeMultiplier 0.4
+   SizeRND 0.1
+   RandomRotDir 0
+   RotMultiplier 600
+   VelAngle 0
+   Velocity 40
+   AirResistance 1
+   GravityMultiply 0.3
+   GravityMultiplyRND 0.1
+   Restitution 0
+   Spring 0
+   Color {
+    0 0 0 0.0633 1 0.0823 0.1329 0.1772
+   }
+   EffectTime 5
+   VelocityMast {
+    0 0.81013 1 1
+   }
+  }
+  EmitorDef dust {
+   ShapeType Box
+   ShapeSize 20 0.01 20
+   Material "{2E26AC45902AB680}graphics/particles/materials/smoke/smoke_dust_06.emat"
+   SizeMultiplier 2
+   SizeRND 0.1
+   Velocity 1
+   GravityMultiply 0.1
+   Alpha {
+    0 1 0.25562 0.73418 0.40434 0.13291 1 0
+   }
+  }
+  EmitorDef dust02 {
+   ShapeType Box
+   ShapeSize 40 10 0.2
+   Angles -0.00001 -86.99997 0
+   Material "{67FEB95AE2ECC2EA}graphics/particles/materials/smoke/smoke_dust_01.emat"
+   SizeRND 1
+   RotMultiplier 20
+   Velocity 12
+   GravityMultiply 0.02
+   Alpha {
+    0 0 0.0488 0.73418 1 0
+   }
+  }
+  EmitorDef dust03 {
+   ShapeType Box
+   ShapeSize 40 30 0.1
+   MaxNum 8
+   Angles -0.00001 -77.99999 0.00001
+   Material "{CF8A36CE7D239262}graphics/particles/materials/smoke/steam_random_m7a2_01.emat"
+   SizeMultiplier 40
+   SizeRND 2
+   Velocity 3
+   LifeTime 10
+   Color {
+    0 0.2975 0.2975 0.2911 1 0.1835 0.1772 0.1203
+   }
+   Alpha {
+    0 0 0.07746 0.68354 0.93493 0.3481 1 0.01899
+   }
+   Size {
+    0 0 0.98916 1 1 1
+   }
+   EffectTime 20
+  }
+ }
+}
