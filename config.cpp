@@ -12,10 +12,11 @@ class CfgPatches
 class CfgVehicles
 {
 	class EffectArea;
-	class AvalancheArea : EffectArea
+	class AvalancheArea_base : EffectArea
 	{
 		scope=2;
 	};
+	class AvalancheArea_dynamic : AvalancheArea_base{};
 };
 
 class CfgMods

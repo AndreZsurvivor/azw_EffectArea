@@ -1,57 +1,30 @@
-class AvalancheArea : EffectArea
+class AvalancheArea_base : EffectArea
 {
-	void AvalancheArea()
+	azwGameTools  GameTools = azwGameTools.Get();
+	protected ref AvalancheAreaManager AvalancheManager;
+
+	void AvalancheArea_base()
 	{
 		RegisterNetSyncVariableFloat("m_Rotation", 0, 0, 2);
-
-		Print(m_Rotation);
+		AvalancheManager = new AvalancheAreaManager();
 	}
-
-	// ----------------------------------------------
-	// 				INITIAL SETUP
-	// ----------------------------------------------
-	override void EEInit()
+	void ~AvalancheArea_base()
 	{
-		// We make sure we have the particle array
-		if ( !m_ToxicClouds )
-			m_ToxicClouds = new array<Particle>;
-		
-		SetSynchDirty();
-		
-		#ifdef DEVELOPER
-		// Debugs when placing entity by hand using internal tools
-		if ( GetGame().IsServer() && !GetGame().IsMultiplayer() )
-		{
-			Debug.Log("YOU CAN IGNORE THE FOLLOWING DUMP");
-			InitZone();
-			Debug.Log("YOU CAN USE FOLLOWING DATA PROPERLY");
-		}
-		#endif
-		
-		if ( GetGame().IsClient() && GetGame().IsMultiplayer() )
-			InitZone();
-		
-		super.EEInit();
+		GameTools.CleanupInstance();
+	}
+	override void OnPlayerEnterServer(PlayerBase player, EffectTrigger trigger)
+	{
+		super.OnPlayerEnterServer(player, trigger);
+		AvalancheManager.IncreasePlayerInTrigger();
 	}
 	
-	override void InitZoneServer()
+	override void OnPlayerExitServer(PlayerBase player, EffectTrigger trigger)
 	{
-		super.InitZoneServer();
-		
-		// We create the trigger on server
-		if ( m_TriggerType != "" )
-			CreateTrigger( m_Position, m_Radius );
-	}
-	
-	override void InitZoneClient()
-	{
-		super.InitZoneClient();
-		
-		// We spawn VFX on client
-		PlaceParticles( GetWorldPosition(), m_Radius, m_InnerRings, m_InnerSpacing, m_OuterRingToggle, m_OuterSpacing, m_OuterRingOffset, m_ParticleID );
+		super.OnPlayerExitServer(player, trigger);
+		AvalancheManager.DecreasePlayerInTrigger();
 	}
 
-    override void PlaceParticles( vector pos, float radius, int nbRings, int innerSpacing, bool outerToggle, int outerSpacing, int outerOffset, int partId )
+	override void PlaceParticles( vector pos, float radius, int nbRings, int innerSpacing, bool outerToggle, int outerSpacing, int outerOffset, int partId )
 	{
 #ifdef NO_GUI
 		return; // do not place any particles if there is no GUI
@@ -93,111 +66,93 @@ class AvalancheArea : EffectArea
 		//Debug.Log("We have : " + nbRings + " rings");
 		//Debug.Log("We have : " + m_VerticalLayers + " layers");
 		
-		float angle = m_Rotation; // Used in for loop to know where we are in terms of angle spacing ( RADIANS )
+		float angle = m_Rotation + 100; // rotation parameter passed from cfgeffectarea.json
 		
 		ParticlePropertiesArray props = new ParticlePropertiesArray();
 		
-		// We also populate vertically, layer 0 will be snapped to ground, subsequent layers will see particles floating and relevant m_VerticalOffset
-		//for ( int k = 0; k <= m_VerticalLayers; k++ )
-		//{
-            int k = 0;
-			vector partPos = pos;
-			// We prevent division by 0
-			// We don't want to tamper with ground layer vertical positioning
-			if ( k != 0 )
+        int k = 0;
+		
+		vector partPos = pos;
+		vector partPos2 = pos;
+		vector partPos3 = pos;
+		vector tempInit = vector.Zero;
+		vector centerSurfaceOrientation = GameTools.GetSurfaceOrientation_Average( partPos[0], partPos[2], 10 );//GetGame().GetSurfaceOrientation( partPos[0], partPos[2]);
+		
+		centerSurfaceOrientation[0] = m_Rotation;
+
+		Print(centerSurfaceOrientation);
+		// We will want to start by placing a particle at center of area
+		props.Insert(ParticleProperties(partPos, ParticlePropertiesFlags.PLAY_ON_CREATION, null, centerSurfaceOrientation, this));
+		++partCounter;
+			
+		// For each concentric ring, we place a particle emitter at a set offset
+		for ( int i = 1; i <= nbRings + outerToggle; i++ )
+		{
+			//Debug.Log("We are on iteration I : " + i );
+			
+			// We prepare the variables to use later in calculation
+			float ab; 					// Length of a side of triangle used to calculate particle positionning
+			vector temp = vector.Zero; 	// Vector we rotate to position next spawn point
+			
+			// The particle density is not the same on the final ring which will only happen if toggled
+			// Toggle uses bool parameter treated as int, thus i > nbRings test ( allows to limit branching )
+			if ( i > nbRings )
 			{
-				partPos[1] = partPos[1] + ( m_VerticalOffset * k );
+				ab = radius - outerOffset; // We want to leave some space to better see area demarcation
+				temp[2] = temp[2] + ab;
+				//Debug.Log("Radius of last circle " + i + " is : " + ab);
+			}
+			else
+			{
+				ab = ( radius / ( nbRings + 1 ) ) * i; // We add the offset from one ring to another
+				temp[2] = temp[2] + ab;
+				//Debug.Log("Radius of inner circle " + i + " is : " + ab);
 			}
 			
-            vector partPos02 = { 9756, 0, 10350 };
-            partPos02[1] = GetGame().SurfaceY( partPos02[0], partPos02[2] );
-
-            vector partPos03 = { 9760, 0, 10350 };
-            partPos03[1] = GetGame().SurfaceY( partPos03[0], partPos03[2] );
-
-            vector partPos04 = { 9765, 0, 10350 };
-            partPos04[1] = GetGame().SurfaceY( partPos04[0], partPos04[2] );
-
-			// We will want to start by placing a particle at center of area
-			props.Insert(ParticleProperties(partPos, ParticlePropertiesFlags.PLAY_ON_CREATION, null, GetGame().GetSurfaceOrientation( partPos[0], partPos[2]), this));
-            //props.Insert(ParticleProperties(partPos02, ParticlePropertiesFlags.PLAY_ON_CREATION, null, GetGame().GetSurfaceOrientation( partPos02[0], partPos02[2]), this));
-            //props.Insert(ParticleProperties(partPos03, ParticlePropertiesFlags.PLAY_ON_CREATION, null, GetGame().GetSurfaceOrientation(  partPos03[0], partPos03[2]), this));
-            //props.Insert(ParticleProperties(partPos04, ParticlePropertiesFlags.PLAY_ON_CREATION, null, GetGame().GetSurfaceOrientation(  partPos04[0], partPos04[2]), this));
-			++partCounter;
-			
-			// For each concentric ring, we place a particle emitter at a set offset
-			for ( int i = 1; i <= nbRings + outerToggle; i++ )
-			{
-				//Debug.Log("We are on iteration I : " + i );
-				
-				// We prepare the variables to use later in calculation
-				float angleIncrement; 		// The value added to the offset angle to place following particle
-				float ab; 					// Length of a side of triangle used to calculate particle positionning
-				vector temp = vector.Zero; 	// Vector we rotate to position next spawn point
-				
-				// The particle density is not the same on the final ring which will only happen if toggled
-				// Toggle uses bool parameter treated as int, thus i > nbRings test ( allows to limit branching )
-				if ( i > nbRings )
-				{
-					ab = radius - outerOffset; // We want to leave some space to better see area demarcation
-					
-					// We calculate the rotation angle depending on particle spacing and distance from center
-					angleIncrement = Math.Acos( 1 - ( ( outerSpacing * outerSpacing ) / ( 2 * Math.SqrInt(ab) ) ) );
-					temp[2] = temp[2] + ab;
-					
-					//Debug.Log("Radius of last circle " + i + " is : " + ab);
-				}
-				else
-				{
-					ab = ( radius / ( nbRings + 1 ) ) * i; // We add the offset from one ring to another
-					
-					// We calculate the rotation angle depending on particle spacing and distance from center
-					angleIncrement = Math.Acos( 1 - ( ( innerSpacing * innerSpacing ) / ( 2 * Math.SqrInt(ab) ) ) );
-					temp[2] = temp[2] + ab;
-					
-					//Debug.Log("Radius of inner circle " + i + " is : " + ab);
-				}
-				
-				//for ( int j = 0; j <= ( Math.PI2 / angleIncrement ); j++ )
-				//{
-					// Determine position of particle emitter
-					// Use offset of current ring for vector length
-					// Use accumulated angle for vector direction
-					
-					//float sinAngle = Math.Sin( angle );
-					//float cosAngle = Math.Cos( angle );
-					Print(angle);
-				
-					partPos = vector.RotateAroundZeroDeg( temp, vector.Up, angle);
-					partPos += pos;
-
-					Print(partPos);
-					
-					// We snap first layer to ground if specified
-					if ( k == 0 && snapFirstLayer == true )
-						partPos[1] = GetGame().SurfaceY( partPos[0], partPos[2] );
-					else if ( k == 0 && snapFirstLayer == false )
-						partPos[1] = partPos[1] - m_NegativeHeight;
-					
-					// We check the particle is indeed in the trigger to make it consistent
-					if ( partPos[1] <= pos[1] + m_PositiveHeight && partPos[1] >= pos[1] - m_NegativeHeight )
-					{
-						// Place emitter at vector end ( coord )
-						props.Insert(ParticleProperties(partPos, ParticlePropertiesFlags.PLAY_ON_CREATION, null, GetGame().GetSurfaceOrientation( partPos[0], partPos[2] ), this));
-						Print("particle placed");
-						
-						++partCounter;
-					}
-
-					// Increase accumulated angle
-					//angle += angleIncrement;
-				//}
-                
-				
-				//angle = 0; // We reset our accumulated angle for the next ring
-			//}
-		}
+			if ( i == 1 )
+				tempInit = temp;
 		
+			partPos = vector.RotateAroundZeroDeg( temp, vector.Up, angle );
+			partPos += pos;
+			partPos[1] = GetGame().SurfaceRoadY( partPos[0], partPos[2]);
+		
+			partPos2 = vector.RotateAroundZeroDeg( tempInit, vector.Up, ( angle + 90 ));
+			partPos2 += partPos;
+			partPos2[1] = GetGame().SurfaceRoadY( partPos2[0], partPos2[2]);
+
+			partPos3 = vector.RotateAroundZeroDeg( tempInit, vector.Up, ( angle - 90 ));
+			partPos3 += partPos;
+			partPos3[1] = GetGame().SurfaceRoadY( partPos3[0], partPos3[2]);
+				
+			// We snap first layer to ground if specified
+			if ( snapFirstLayer == true )
+				partPos[1] = GetGame().SurfaceY( partPos[0], partPos[2] );
+			
+			else if ( snapFirstLayer == false )
+				partPos[1] = partPos[1] - m_NegativeHeight;
+			
+			// We check the particle is indeed in the trigger to make it consistent
+			if ( partPos[1] <= pos[1] + m_PositiveHeight && partPos[1] >= pos[1] - m_NegativeHeight )
+			{
+				vector tempCenterSurfaceOrientation = GameTools.GetSurfaceOrientation_Average( partPos[0], partPos[2], 2 );
+				tempCenterSurfaceOrientation[0] = ((98*centerSurfaceOrientation[0] + 2*tempCenterSurfaceOrientation[0]) / 100);
+				props.Insert(ParticleProperties(partPos, ParticlePropertiesFlags.PLAY_ON_CREATION, null, tempCenterSurfaceOrientation, this));
+				Print("particle placed");
+				++partCounter;
+			
+				tempCenterSurfaceOrientation = GameTools.GetSurfaceOrientation_Average( partPos2[0], partPos2[2], 2 );
+				tempCenterSurfaceOrientation[0] = ((98*centerSurfaceOrientation[0] + 2*tempCenterSurfaceOrientation[0]) / 100);
+				props.Insert(ParticleProperties(partPos2, ParticlePropertiesFlags.PLAY_ON_CREATION, null, tempCenterSurfaceOrientation, this));
+				Print("particle placed");
+				++partCounter;
+			
+				tempCenterSurfaceOrientation = GameTools.GetSurfaceOrientation_Average( partPos3[0], partPos3[2], 2 );
+				tempCenterSurfaceOrientation[0] = ((98*centerSurfaceOrientation[0] + 2*tempCenterSurfaceOrientation[0]) / 100);
+				props.Insert(ParticleProperties(partPos3, ParticlePropertiesFlags.PLAY_ON_CREATION, null, tempCenterSurfaceOrientation, this));
+				Print("particle placed");
+				++partCounter;
+			}
+		}
 		m_ToxicClouds.Reserve(partCounter);
 		
 		ParticleManager gPM = ParticleManager.GetInstance();
@@ -221,5 +176,49 @@ class AvalancheArea : EffectArea
 		}
 		
 		//Debug.Log("Emitter count : " + partCounter );
+	}
+}
+
+class AvalancheArea_static : AvalancheArea_base
+{
+	override void EEInit()
+	{
+		// We make sure we have the particle array
+		if ( !m_ToxicClouds )
+			m_ToxicClouds = new array<Particle>;
+		
+		SetSynchDirty();
+		
+		#ifdef DEVELOPER
+		// Debugs when placing entity by hand using internal tools
+		if ( GetGame().IsServer() && !GetGame().IsMultiplayer() )
+		{
+			Debug.Log("YOU CAN IGNORE THE FOLLOWING DUMP");
+			InitZone();
+			Debug.Log("YOU CAN USE FOLLOWING DATA PROPERLY");
+		}
+		#endif
+		
+		if ( GetGame().IsClient() && GetGame().IsMultiplayer() )
+			InitZone();
+		
+		super.EEInit();
+	}
+	
+	override void InitZoneServer()
+	{
+		super.InitZoneServer();
+		
+		// We create the trigger on server
+		if ( m_TriggerType != "" )
+			CreateTrigger( m_Position, m_Radius );
+	}
+	
+	override void InitZoneClient()
+	{
+		super.InitZoneClient();
+		
+		// We spawn VFX on client
+		PlaceParticles( GetWorldPosition(), m_Radius, m_InnerRings, m_InnerSpacing, m_OuterRingToggle, m_OuterSpacing, m_OuterRingOffset, m_ParticleID );
 	}
 }

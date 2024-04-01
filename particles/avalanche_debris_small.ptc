@@ -2,24 +2,25 @@ EffectDef {
  Emitors {
   EmitorDef smoke_middle_normal_01 {
    ShapeType Ellipse
-   ShapeSize 20 1 100
+   ShapeSize 20 1 120
    ConeAngle 0 0 0
    MaxNum 10
    BirthRate 1
    BirthRateRND 1
    BirthRateVel 1
-   Offset 0 -0.29607 8.22545
+   Offset 15 0 0
+   Angles 90 0 0
    Material "{17F1336FEF157B35}graphics/particles/materials/smoke/smoke_dust_01_em_spooky.emat"
    CenterY -0.35
-   ScaleY 0.813
-   SizeMultiplier 75
+   ScaleY 0.58
+   SizeMultiplier 100
    SizeRND 25
    RandomRotDir 1
    RotMultiplier 1
    VelAngle 0
    RandomAngle 0
    Sort 1
-   Velocity 0.2
+   Velocity 1
    VelocityRND 0.2
    AirResistance 10
    AirResistanceRND 0
@@ -32,16 +33,16 @@ EffectDef {
    LifeTime 5
    LifeTimeRND 10
    Color {
-    0 0.1266 0.1329 0.2025 0.1898 0.2975 0.3038 0.3354 1 0.1835 0.2025 0.2152
+    0 0.1519 0.1456 0.1456 0.196 0.3291 0.3228 0.2975 1 0.0949 0.0759 0.057
    }
    Alpha {
-    0 0 0.02455 0 0.07901 1 0.71727 0.65823 0.97521 0.10759 1 0
+    0 0 0.055 0.88608 0.19132 0.71519 0.71882 0.65823 0.97521 0.10759 1 0
    }
    RotationSpeed {
     0 0 0.60937 0.1962 0.89881 0.15823 1 0.0443
    }
    Size {
-    0 0.39241 0.15802 0.66456 1 1
+    0 0.14557 0.45236 0.41139 0.6251 0.46203 1 1
    }
    ColorMast {
     0 1 1 1 0.4389 0.8481 0.6835 0.7785 0.5256 0.7468 0.7468 0.7468 1 0.8734 0.8734 0.8608
@@ -57,16 +58,16 @@ EffectDef {
    BirthRateRND 5
    BirthRateVel 100
    Offset 0 0.27255 2.69729
-   Angles -179.99998 85.99998 -0
+   Angles -90 86 0
    Material "{118F069016CE1546}graphics/particles/materials/enviroment/stones.emat"
    ScaleX 0.214
    ScaleY 0.132
    SizeRND 2
    RotMultiplier 600
-   Velocity 25
+   Velocity 240
    VelocityRND 1
-   AirResistance 0.2
-   GravityMultiply 0.3
+   AirResistance 5
+   GravityMultiply 10
    LifetimeByAnim 0
    LifeTime 1
    LifeTimeRND 0
@@ -94,7 +95,7 @@ EffectDef {
    MaxNum 10
    BirthRate 5
    Offset 0 0.42093 7.68865
-   Angles 179.99998 88.00011 -0.00002
+   Angles 270 88 0
    LocalTransform 0
    Material "{214D9C1A37B3A94A}graphics/particles/materials/smoke/smoke_debris_01.emat"
    SizeMultiplier 0.4
@@ -102,9 +103,10 @@ EffectDef {
    RandomRotDir 0
    RotMultiplier 600
    VelAngle 0
-   Velocity 40
+   Velocity 180
    AirResistance 1
-   GravityMultiply 0.3
+   AirResistanceRND 1
+   GravityMultiply 20
    GravityMultiplyRND 0.1
    Restitution 0
    Spring 0
@@ -116,9 +118,14 @@ EffectDef {
     0 0.81013 1 1
    }
   }
-  EmitorDef dust {
+  EmitorDef impacts {
    ShapeType Box
    ShapeSize 20 0.01 20
+   MaxNum 1
+   BirthRate 0.1
+   BirthRateRND 1
+   BirthRateVel 1
+   Angles 90 0 0
    Material "{2E26AC45902AB680}graphics/particles/materials/smoke/smoke_dust_06.emat"
    SizeMultiplier 2
    SizeRND 0.1
@@ -131,31 +138,48 @@ EffectDef {
   EmitorDef dust02 {
    ShapeType Box
    ShapeSize 40 10 0.2
-   Angles -0.00001 -86.99997 0
+   MaxNum 40
+   Angles 90 -87 0
    Material "{67FEB95AE2ECC2EA}graphics/particles/materials/smoke/smoke_dust_01.emat"
+   ScaleY 0.3
+   SizeMultiplier 240
    SizeRND 1
-   RotMultiplier 20
-   Velocity 12
-   GravityMultiply 0.02
+   RandomRotDir 0
+   RotMultiplier 0
+   Velocity 48
+   VelocityRND 3
+   AirResistance 1
+   GravityMultiply 0.6
+   GravityMultiplyRND 0.2
+   LifeTime 4
+   Color {
+    0 0.4177 0.3608 0.3101 1 0.3734 0.3418 0.3291
+   }
    Alpha {
-    0 0 0.0488 0.73418 1 0
+    0 0 0.134 0.73418 0.55151 0.68987 1 0
+   }
+   Size {
+    0 0.26582 0.55151 0.37342 1 1
    }
   }
   EmitorDef dust03 {
    ShapeType Box
-   ShapeSize 40 30 0.1
-   MaxNum 8
-   Angles -0.00001 -77.99999 0.00001
+   ShapeSize 15 30 0.1
+   MaxNum 12
+   BirthRate 1.5
+   BirthRateRND 0.15
+   BirthRateVel 0.25
+   Angles 90 -78 0
    Material "{CF8A36CE7D239262}graphics/particles/materials/smoke/steam_random_m7a2_01.emat"
    SizeMultiplier 40
    SizeRND 2
    Velocity 3
    LifeTime 10
    Color {
-    0 0.2975 0.2975 0.2911 1 0.1835 0.1772 0.1203
+    0 0.1962 0.2089 0.1962 1 0.2089 0.2152 0.2089
    }
    Alpha {
-    0 0 0.07746 0.68354 0.93493 0.3481 1 0.01899
+    0 0 0.17351 0.39241 0.93571 0.07595 1 0.01899
    }
    Size {
     0 0 0.98916 1 1 1

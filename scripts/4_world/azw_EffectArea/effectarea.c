@@ -38,8 +38,6 @@ modded class EffectArea
 
         if ( params.m_ParamRotation > 0 && params.m_ParamRotation < 360 )
             m_Rotation = params.m_ParamRotation;
-
-		Print(m_Rotation);
 		
 		m_ParticleID = params.m_ParamPartId;
 		m_AroundParticleID = params.m_ParamAroundPartId;

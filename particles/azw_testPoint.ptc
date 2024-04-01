@@ -20,5 +20,38 @@ EffectDef {
    }
    EffectTime 1
   }
+  EmitorDef emitorR {
+   ShapeType Cone
+   ConeAngle 360 0 1
+   MaxNum 40
+   BirthRate 10
+   Angles 0 90 0
+   Material "{CB7AF4FD8ACBFDFC}graphics/particles/materials/glow/glow1.emat"
+   Velocity 10
+   Color {
+    0 1 0 0 1 1 0 0
+   }
+  }
+  EmitorDef emitorg {
+   ShapeType Cone
+   ConeAngle 360 0 1
+   MaxNum 40
+   BirthRate 10
+   Angles 0 -90 0
+   Material "{CB7AF4FD8ACBFDFC}graphics/particles/materials/glow/glow1.emat"
+   Velocity 10
+   Color {
+    0 0 0.8861 0 1 0 1 0
+   }
+  }
+  EmitorDef emitorW {
+   ShapeType Cone
+   ConeAngle 360 0 2
+   MaxNum 40
+   BirthRate 10
+   Angles 0 0 90
+   Material "{CB7AF4FD8ACBFDFC}graphics/particles/materials/glow/glow1.emat"
+   Velocity 10
+  }
  }
 }
