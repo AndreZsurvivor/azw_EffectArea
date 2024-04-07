@@ -141,6 +141,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 	
 	override void InitZoneServer()
 	{
+		//PlacePoints( GetWorldPosition(), m_Radius, m_InnerRings, m_InnerSpacing, m_OuterRingToggle, m_OuterSpacing, m_OuterRingOffset, m_ParticleID );
 		super.InitZoneServer();
 
 		// We create the trigger on server
@@ -161,7 +162,19 @@ class AvalancheArea_dynamic : AvalancheArea_base
 
 	override void CreateTrigger( vector pos, int radius )
 	{
-		super.CreateTrigger( pos, radius );
+		vector temp = { 0, 0, 0 };
+		foreach (vector point: m_EmitterPoints)
+		{
+			temp += point;
+		}
+		temp[0] = temp[0]/m_EmitterPoints.Count();
+		temp[1] = temp[1]/m_EmitterPoints.Count();
+		temp[2] = temp[2]/m_EmitterPoints.Count();
+
+		Print(m_EmitterPoints.Count());
+
+		int halfradius = radius/2;
+		super.CreateTrigger( pos, halfradius );
 		
 		// This handles the specific case of dynamic triggers as some additionnal parameters are present
 		AvalancheTrigger_dynamic dynaTrigger = AvalancheTrigger_dynamic.Cast( m_Trigger );
@@ -203,7 +216,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 				//Debug.Log("We start decay");
 				foreach ( Particle particleA : m_ToxicClouds )
 				{
-					loopIteration++
+					loopIteration++;
 
 					if (loopIteration > 4)
 						break;
@@ -222,7 +235,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 				//Debug.Log("We finish decay");
 				foreach ( Particle particleB : m_ToxicClouds )
 				{
-					loopIteration++
+					loopIteration++;
 
 					if (loopIteration > 10)
 						break;
