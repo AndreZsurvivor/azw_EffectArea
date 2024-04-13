@@ -25,13 +25,13 @@ modded class PlayerBase
 
 	override protected void OnPlayerIsNowInsideEffectAreaBeginServer()
 	{
-        GetModifiersManager().ActivateModifier( azwModifiers.MDF_AVALANCHEEXPOSURE );
+        //GetModifiersManager().ActivateModifier( azwModifiers.MDF_AVALANCHEEXPOSURE );
 		//Print("ANY EFFECT AREA ENTERED <------------------------------------------------------------- FINAL");
 	}
 	
 	override protected void OnPlayerIsNowInsideEffectAreaEndServer()
 	{
-        GetModifiersManager().DeactivateModifier( azwModifiers.MDF_AVALANCHEEXPOSURE );
+        //GetModifiersManager().DeactivateModifier( azwModifiers.MDF_AVALANCHEEXPOSURE );
 		//Print("ANY EFFECT AREA LEFT <------------------------------------------------------------- FINAL");
 	}
 	

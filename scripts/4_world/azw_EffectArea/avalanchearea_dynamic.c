@@ -1,11 +1,12 @@
 enum AvalancheAreaState
 {
 	INIT 			= 1, // The dynamic area is initializing
-	START 			= 2, // The dynamic area is starting
-	LIVE 			= 3, // The dynamic area is live
-	DECAY_START 	= 4, // The dynamic area decay has started
-	DECAY_END 		= 5, // The dynamic area will soon be deleted
-	STOP			= 6, // The Event has finished
+	READY			= 2,
+	START 			= 3, // The dynamic area is starting
+	LIVE 			= 4, // The dynamic area is live
+	DECAY_START 	= 5, // The dynamic area decay has started
+	DECAY_END 		= 6, // The dynamic area will soon be deleted
+	STOP			= 7, // The Event has finished
 }
 
 // The dynamic AvalancheArea, using it's own default settings
@@ -20,7 +21,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 	
 	// Constants used for startup events
 	const float				LIFETIME_DEFAULT			= 80;
-	const int 				AREA_SETUP_DELAY 			= 20;
+	const int 				AREA_SETUP_DELAY 			= 2;
 	
 	// Constants used for dissapearing events
 	const float 			START_DECAY_LIFETIME		= 20;
@@ -43,7 +44,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 		if ( m_AvalancheState == AvalancheAreaState.INIT )
 		{
 			m_StartupTimer = new Timer( CALL_CATEGORY_GAMEPLAY );
-			m_StartupTimer.Run( AREA_SETUP_DELAY, this, "InitZone" );
+			//m_StartupTimer.Run( AREA_SETUP_DELAY, this, "InitZone" );
 		}
 	}
 	
@@ -64,9 +65,27 @@ class AvalancheArea_dynamic : AvalancheArea_base
 	
 	override void Tick()
 	{
-		m_Lifetime -= TICK_RATE;
-		Print("tick");
+		if ( m_AvalancheState >= AvalancheAreaState.START )
+			m_Lifetime -= TICK_RATE;
+
+		
+		Print(m_AvalancheState);
 		Print(m_Lifetime);
+		int insiders =  m_Trigger.GetInsiders().Count();
+		Print("insiders =" + insiders);
+		
+		if ( insiders > 0 && m_AvalancheState == AvalancheAreaState.READY )
+		{
+			int random100 = Math.RandomInt(0, 100);
+			int chance = 95 - insiders;
+			if (random100 > chance)
+			{
+				Print("random passed");
+				SetDecayState( AvalancheAreaState.START );
+			}
+
+		}
+		
 		if ( GetRemainingTime() < FINISH_DECAY_LIFETIME)
 		{
 			// The second state of decay, further reduction of particle density and size
@@ -131,9 +150,10 @@ class AvalancheArea_dynamic : AvalancheArea_base
 	// We spawn particles and setup trigger
 	override void InitZone()
 	{
+		Print("InitZone");
 		m_TimerTick = new Timer;
 		m_TimerTick.Run(TICK_RATE, this, "Tick", NULL, true);
-		m_AvalancheState = AvalancheAreaState.LIVE;
+		m_AvalancheState = AvalancheAreaState.READY;
 		SetSynchDirty();
 		
 		super.InitZone();
@@ -155,7 +175,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 		
 		if ( !m_ToxicClouds )
 			m_ToxicClouds = new array<Particle>;
-		
+
 		// We spawn VFX on client
 		PlaceParticles( GetWorldPosition(), m_Radius, m_InnerRings, m_InnerSpacing, m_OuterRingToggle, m_OuterSpacing, m_OuterRingOffset, m_ParticleID );		
 	}
@@ -173,8 +193,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 
 		Print(m_EmitterPoints.Count());
 
-		int halfradius = radius/2;
-		super.CreateTrigger( pos, halfradius );
+		super.CreateTrigger( pos, radius );
 		
 		// This handles the specific case of dynamic triggers as some additionnal parameters are present
 		AvalancheTrigger_dynamic dynaTrigger = AvalancheTrigger_dynamic.Cast( m_Trigger );
@@ -199,17 +218,22 @@ class AvalancheArea_dynamic : AvalancheArea_base
 		
 		switch ( m_AvalancheState )
 		{
+			case AvalancheAreaState.READY:
+
+				break;
+
 			case AvalancheAreaState.START:
 				Print("Avalanche started");
+				m_Lifetime = LIFETIME_DEFAULT;
+				InitZone();
+				AvalancheAreaState.LIVE;
 				break;
 
 			case AvalancheAreaState.LIVE:
-			{
 				Print("Avlanache LIVE");
 				break;
-			}
+
 			case AvalancheAreaState.DECAY_START:
-			{
 				int loopIteration = 0;
 				Print("Avlanache DECAY_START");
 				// We go through all the particles bound to this area and update relevant parameters
@@ -227,9 +251,8 @@ class AvalancheArea_dynamic : AvalancheArea_base
 	
 				}
 				break;
-			}
+
 			case AvalancheAreaState.DECAY_END:
-			{
 				Print("Avlanache DECAY_END");
 				// We go through all the particles bound to this area and update relevant parameters
 				//Debug.Log("We finish decay");
@@ -246,16 +269,15 @@ class AvalancheArea_dynamic : AvalancheArea_base
 
 				}
 				break;
-			}
+
 			case AvalancheAreaState.STOP:
-			{
 				Print("Avlanache STOP");
 				foreach ( Particle particleC : m_ToxicClouds )
 				{
 					particleC.Stop();
 				}
 				break;
-			}
+
 			default:
 				break;
 		}
