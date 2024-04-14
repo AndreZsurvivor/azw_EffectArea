@@ -105,7 +105,7 @@ class AvalancheExposureMdfr: ModifierBase
 
 	void ApplyAgentsToBleedingSources(PlayerBase player, float deltaT)
 	{
-		Print("AvalancheExposure");
+		//Print("AvalancheExposure");
 		int count = player.GetBleedingSourceCount();
 		float agent_dose = count * AGENT_DOSE_PER_BS_SEC * deltaT;
 		player.InsertAgent(eAgents.CHEMICAL_POISON, agent_dose);

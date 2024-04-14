@@ -2,21 +2,11 @@ class CfgPatches
 {
     class azw_EffectArea
     {
-		units[]				=	{"AvalancheArea"};
+		units[]				=	{"AvalancheArea", "azw_DamageArea"};
 		weapons[]			=	{};
 		requiredVersion		=	0.1;
 		requiredAddons[]	=	{"DZ_Data","DZ_Scripts"};
     };
-};
-
-class CfgVehicles
-{
-	class EffectArea;
-	class AvalancheArea_base : EffectArea
-	{
-		scope=2;
-	};
-	class AvalancheArea_dynamic : AvalancheArea_base{};
 };
 
 class CfgMods
@@ -51,5 +41,23 @@ class CfgMods
 				files[] = {"azw_EffectArea/scripts/4_world"};
 			};
 		};
+	};
+};
+
+class CfgVehicles
+{
+	class EffectArea;
+	class AvalancheArea_base : EffectArea
+	{
+		scope=2;
+	};
+	class AvalancheArea_dynamic : AvalancheArea_base
+	{
+	};
+
+	class Inventory_Base;
+	class azw_DamageArea : Inventory_Base
+	{
+		scope=2;
 	};
 };
