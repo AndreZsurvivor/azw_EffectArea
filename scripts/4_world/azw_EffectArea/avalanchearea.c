@@ -4,6 +4,7 @@ class AvalancheArea_base : EffectArea
 	protected ref array<vector> m_EmitterPoints;
 	protected ref AvalancheAreaManager AvalancheManager;
 	protected ref array<Object> m_DamageAreas;
+	protected Object m_AvalancheSound;
 
 	void AvalancheArea_base()
 	{

@@ -2,9 +2,9 @@ EffectDef {
  Emitors {
   EmitorDef smoke_middle_normal_01 {
    ShapeType Ellipse
-   ShapeSize 20 1 120
+   ShapeSize 50 1 10
    ConeAngle 0 0 0
-   MaxNum 10
+   MaxNum 15
    BirthRate 1
    BirthRateRND 1
    BirthRateVel 1
@@ -36,7 +36,7 @@ EffectDef {
     0 0.1519 0.1456 0.1456 0.196 0.3291 0.3228 0.2975 1 0.0949 0.0759 0.057
    }
    Alpha {
-    0 0 0.055 0.88608 0.19132 0.71519 0.71882 0.65823 0.97521 0.10759 1 0
+    0 0 0.055 0.88608 0.19132 1 0.7227 0.94304 0.97521 0.10759 1 0
    }
    RotationSpeed {
     0 0 0.60937 0.1962 0.89881 0.15823 1 0.0443
@@ -45,7 +45,7 @@ EffectDef {
     0 0.14557 0.45236 0.41139 0.6251 0.46203 1 1
    }
    ColorMast {
-    0 1 1 1 0.4389 0.8481 0.6835 0.7785 0.5256 0.7468 0.7468 0.7468 1 0.8734 0.8734 0.8608
+    0 1 1 1 0.4353 0.7785 0.7722 0.7785 0.5256 0.7468 0.7468 0.7468 1 0.8734 0.8734 0.8608
    }
    RotationSpeedMast {
     0 1 1 1
@@ -54,7 +54,8 @@ EffectDef {
   EmitorDef debris_small {
    ShapeType Box
    ShapeSize 40 10 0.2
-   BirthRate 0.3
+   MaxNum 20
+   BirthRate 16
    BirthRateRND 5
    BirthRateVel 100
    Offset 0 0.27255 2.69729
@@ -64,6 +65,7 @@ EffectDef {
    ScaleY 0.132
    SizeRND 2
    RotMultiplier 600
+   Sort 1
    Velocity 240
    VelocityRND 1
    AirResistance 5
@@ -92,8 +94,8 @@ EffectDef {
   EmitorDef debris_big {
    ShapeType Box
    ShapeSize 20 10 0.2
-   MaxNum 10
-   BirthRate 5
+   MaxNum 31
+   BirthRate 10
    Offset 0 0.42093 7.68865
    Angles 270 88 0
    LocalTransform 0
@@ -103,6 +105,7 @@ EffectDef {
    RandomRotDir 0
    RotMultiplier 600
    VelAngle 0
+   Sort 1
    Velocity 180
    AirResistance 1
    AirResistanceRND 1
@@ -129,15 +132,16 @@ EffectDef {
    Material "{2E26AC45902AB680}graphics/particles/materials/smoke/smoke_dust_06.emat"
    SizeMultiplier 2
    SizeRND 0.1
+   Sort 1
    Velocity 1
    GravityMultiply 0.1
    Alpha {
-    0 1 0.25562 0.73418 0.40434 0.13291 1 0
+    0 1 0.03021 0.18354 0.24245 0 1 0
    }
   }
   EmitorDef dust02 {
    ShapeType Box
-   ShapeSize 40 10 0.2
+   ShapeSize 50 10 0.2
    MaxNum 40
    Angles 90 -87 0
    Material "{67FEB95AE2ECC2EA}graphics/particles/materials/smoke/smoke_dust_01.emat"
@@ -146,7 +150,8 @@ EffectDef {
    SizeRND 1
    RandomRotDir 0
    RotMultiplier 0
-   Velocity 48
+   Sort 1
+   Velocity 50
    VelocityRND 3
    AirResistance 1
    GravityMultiply 0.6
@@ -156,33 +161,38 @@ EffectDef {
     0 0.4177 0.3608 0.3101 1 0.3734 0.3418 0.3291
    }
    Alpha {
-    0 0 0.134 0.73418 0.55151 0.68987 1 0
+    0 0 0.14175 0.58861 0.89388 0.00633 1 0
    }
    Size {
     0 0.26582 0.55151 0.37342 1 1
    }
+   EffectTime 10
   }
   EmitorDef dust03 {
    ShapeType Box
-   ShapeSize 15 30 0.1
+   ShapeSize 50 20 0.1
    MaxNum 12
    BirthRate 1.5
    BirthRateRND 0.15
    BirthRateVel 0.25
+   Offset -20 0 0
    Angles 90 -78 0
    Material "{CF8A36CE7D239262}graphics/particles/materials/smoke/steam_random_m7a2_01.emat"
-   SizeMultiplier 40
+   ScaleX 1
+   SizeMultiplier 80
    SizeRND 2
-   Velocity 3
+   Sort 1
+   Velocity 20
+   GravityMultiply 0.1
    LifeTime 10
    Color {
     0 0.1962 0.2089 0.1962 1 0.2089 0.2152 0.2089
    }
    Alpha {
-    0 0 0.17351 0.39241 0.93571 0.07595 1 0.01899
+    0 0 0.189 0.24684 0.27808 1 0.93571 0.07595 1 0.01899
    }
    Size {
-    0 0 0.98916 1 1 1
+    0 0.39241 0.98916 1 1 1
    }
    EffectTime 20
   }

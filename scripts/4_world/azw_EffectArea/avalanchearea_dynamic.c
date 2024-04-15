@@ -89,9 +89,14 @@ class AvalancheArea_dynamic : AvalancheArea_base
 					int iterator = 0;
 					foreach ( vector position: m_EmitterPoints)
 					{
+						vector orientation = vector.Zero;
+						if (!iterator && !m_AvalancheSound)
+						{
+							m_AvalancheSound = SpawnObject("azw_AvalancheSound", position, orientation, 1);
+						}
+
 						if ( iterator )
 						{
-							vector orientation = vector.Zero;
 							orientation[0] = m_Rotation;
 							vector positionCorrected = position;
 							positionCorrected[1] = position[1] - 10;
