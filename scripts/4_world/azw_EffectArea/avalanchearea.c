@@ -2,7 +2,7 @@ class AvalancheArea_base : EffectArea
 {
 	protected azwGameTools  GameTools;
 	protected ref array<vector> m_EmitterPoints;
-	protected ref AvalancheAreaManager AvalancheManager;
+	//protected ref AvalancheAreaManager AvalancheManager;
 	protected ref array<Object> m_DamageAreas;
 	protected Object m_AvalancheSound;
 
@@ -11,7 +11,7 @@ class AvalancheArea_base : EffectArea
 		RegisterNetSyncVariableFloat("m_Rotation", 0, 0, 2);
 		m_EmitterPoints 	= new array<vector>;
 		m_DamageAreas		= new array<Object>;
-		AvalancheManager	= new AvalancheAreaManager();
+		//AvalancheManager	= new AvalancheAreaManager();
 	}
 	void ~AvalancheArea_base()
 	{
@@ -21,22 +21,22 @@ class AvalancheArea_base : EffectArea
 	override void OnPlayerEnterServer(PlayerBase player, EffectTrigger trigger)
 	{
 		super.OnPlayerEnterServer(player, trigger);
-		AvalancheManager.IncreasePlayerInTrigger();
+		//AvalancheManager.IncreasePlayerInTrigger();
 		player.IncreaseEffectAreaCount();
 	}
 	
 	override void OnPlayerExitServer(PlayerBase player, EffectTrigger trigger)
 	{
 		super.OnPlayerExitServer(player, trigger);
-		AvalancheManager.DecreasePlayerInTrigger();
+		//AvalancheManager.DecreasePlayerInTrigger();
 		player.DecreaseEffectAreaCount();
 	}
-	
+	/*
 	AvalancheAreaManager GetAvalancheManager()
 	{
 		return AvalancheManager;
 	}
-
+	*/
 	void InsertEmitterPoint(vector pos)
 	{
 		m_EmitterPoints.Insert(pos);

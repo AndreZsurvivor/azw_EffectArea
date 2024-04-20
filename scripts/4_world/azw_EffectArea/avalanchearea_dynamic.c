@@ -139,6 +139,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 		}
 		if (m_Lifetime <= 0)
 		{
+			GetGame().ObjectDelete( m_AvalancheSound );
 			SetDecayState( AvalancheAreaState.STOP );
 		}
 	}
@@ -301,6 +302,10 @@ class AvalancheArea_dynamic : AvalancheArea_base
 				{
 					particleC.Stop();
 				}
+				delete m_EmitterPoints;
+				delete m_DamageAreas;
+				//delete m_AvalancheSound;
+				delete m_StartupTimer;
 				break;
 
 			default:
