@@ -2,44 +2,33 @@ class AvalancheArea_base : EffectArea
 {
 	protected azwGameTools  GameTools;
 	protected ref array<vector> m_EmitterPoints;
-	//protected ref AvalancheAreaManager AvalancheManager;
 	protected ref array<Object> m_DamageAreas;
 	protected Object m_AvalancheSound;
 
 	void AvalancheArea_base()
 	{
 		RegisterNetSyncVariableFloat("m_Rotation", 0, 0, 2);
-		m_EmitterPoints 	= new array<vector>;
-		m_DamageAreas		= new array<Object>;
-		//AvalancheManager	= new AvalancheAreaManager();
 	}
 	void ~AvalancheArea_base()
 	{
 		GameTools.CleanupInstance();
-		delete m_EmitterPoints;
 	}
 	override void OnPlayerEnterServer(PlayerBase player, EffectTrigger trigger)
 	{
 		super.OnPlayerEnterServer(player, trigger);
-		//AvalancheManager.IncreasePlayerInTrigger();
 		player.IncreaseEffectAreaCount();
 	}
 	
 	override void OnPlayerExitServer(PlayerBase player, EffectTrigger trigger)
 	{
 		super.OnPlayerExitServer(player, trigger);
-		//AvalancheManager.DecreasePlayerInTrigger();
 		player.DecreaseEffectAreaCount();
 	}
-	/*
-	AvalancheAreaManager GetAvalancheManager()
-	{
-		return AvalancheManager;
-	}
-	*/
+
 	void InsertEmitterPoint(vector pos)
 	{
-		m_EmitterPoints.Insert(pos);
+		if (m_EmitterPoints)
+			m_EmitterPoints.Insert(pos);
 	}
 
 	Object SpawnObject(string type, vector position, vector orientation, float scale = 1.0)
@@ -57,6 +46,11 @@ class AvalancheArea_base : EffectArea
 
 	array<vector> CalculateEmittorPositions( vector pos, float radius, int nbRings, int innerSpacing, bool outerToggle, int outerSpacing, int outerOffset )
 	{
+		if (!m_EmitterPoints)
+			m_EmitterPoints = new array<vector>;
+
+		if (!m_DamageAreas)
+			m_DamageAreas = new array<Object>;
 		// Determine if we snap first layer to ground
 		bool snapFirstLayer = true; 
 		if ( m_Type == eZoneType.STATIC && pos[1] != GetGame().SurfaceRoadY( pos[0], pos[2] ) )
@@ -169,7 +163,6 @@ class AvalancheArea_base : EffectArea
 				++partCounter;
 			}
 		}
-		m_ToxicClouds.Reserve(partCounter);
 		m_DamageAreas.Reserve(partCounter);
 
 		return m_EmitterPoints;
@@ -235,7 +228,7 @@ class AvalancheArea_base : EffectArea
 		// We will want to start by placing a particle at center of area
 		props.Insert(ParticleProperties(partPos, ParticlePropertiesFlags.PLAY_ON_CREATION, null, centerSurfaceOrientation, this));
 		//AvalancheManager.InsertEmitterPoint(partPos);
-		m_EmitterPoints.Insert(partPos);
+		//m_EmitterPoints.Insert(partPos);
 		//SpawnObject("azw_DamageArea", partPos, "0.000000 -0.000000 -0.000000", 1);
 		++partCounter;
 
@@ -293,28 +286,18 @@ class AvalancheArea_base : EffectArea
 				vector tempCenterSurfaceOrientation = GameTools.GetSurfaceOrientation_Average( partPos[0], partPos[2], 2 );
 				tempCenterSurfaceOrientation[0] = ((98*centerSurfaceOrientation[0] + 2*tempCenterSurfaceOrientation[0]) / 100);
 				props.Insert(ParticleProperties(partPos, ParticlePropertiesFlags.PLAY_ON_CREATION, null, tempCenterSurfaceOrientation, this));
-				//AvalancheManager.InsertEmitterPoint(partPos);
-				m_EmitterPoints.Insert(partPos);
-				//SpawnObject("azw_DamageArea", partPos, "0.000000 -0.000000 -0.000000", 1);
-				Print("particle placed");
+				props.Insert(ParticleProperties(partPos, ParticlePropertiesFlags.PLAY_ON_CREATION, null, tempCenterSurfaceOrientation, this));
+				++partCounter;
 				++partCounter;
 			
 				tempCenterSurfaceOrientation = GameTools.GetSurfaceOrientation_Average( partPos2[0], partPos2[2], 2 );
 				tempCenterSurfaceOrientation[0] = ((98*centerSurfaceOrientation[0] + 2*tempCenterSurfaceOrientation[0]) / 100);
 				props.Insert(ParticleProperties(partPos2, ParticlePropertiesFlags.PLAY_ON_CREATION, null, tempCenterSurfaceOrientation, this));
-				//AvalancheManager.InsertEmitterPoint(partPos2);
-				m_EmitterPoints.Insert(partPos2);
-				//SpawnObject("azw_DamageArea", partPos2, "0.000000 -0.000000 -0.000000", 1);
-				Print("particle placed");
 				++partCounter;
 			
 				tempCenterSurfaceOrientation = GameTools.GetSurfaceOrientation_Average( partPos3[0], partPos3[2], 2 );
 				tempCenterSurfaceOrientation[0] = ((98*centerSurfaceOrientation[0] + 2*tempCenterSurfaceOrientation[0]) / 100);
 				props.Insert(ParticleProperties(partPos3, ParticlePropertiesFlags.PLAY_ON_CREATION, null, tempCenterSurfaceOrientation, this));
-				//AvalancheManager.InsertEmitterPoint(partPos3);
-				m_EmitterPoints.Insert(partPos3);
-				//SpawnObject("azw_DamageArea", partPos3, "0.000000 -0.000000 -0.000000", 1);
-				Print("particle placed");
 				++partCounter;
 			}
 		}
@@ -338,8 +321,8 @@ class AvalancheArea_base : EffectArea
 		{
 			OnParticleAllocation(gPM, createdParticles);
 		}
+		Print("particles placed");
 	}
-	
 }
 
 class AvalancheArea_static : AvalancheArea_base

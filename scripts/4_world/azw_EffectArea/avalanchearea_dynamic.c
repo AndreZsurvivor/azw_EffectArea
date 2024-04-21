@@ -25,13 +25,14 @@ class AvalancheArea_dynamic : AvalancheArea_base
 	const int 				AREA_SETUP_DELAY 			= 2;
 	
 	// Constants used for dissapearing events
-	const float 			START_DECAY_LIFETIME		= 1;
-	const float 			FINISH_DECAY_LIFETIME		= 0.5;
-	const float				COOLDOWN_TIME				= 1500;
+	const float 			START_DECAY_LIFETIME		= 2;
+	const float 			FINISH_DECAY_LIFETIME		= 1;
+	const float				COOLDOWN_TIME				= 20;
 	
 	void AvalancheArea_dynamic()
 	{
 		RegisterNetSyncVariableInt("m_AvalancheState");
+		RegisterNetSyncVariableFloat("m_Lifetime");
 	}
 	
 	override void EEOnCECreate()
@@ -68,21 +69,17 @@ class AvalancheArea_dynamic : AvalancheArea_base
 	override void Tick()
 	{
 		if ( m_AvalancheState >= AvalancheAreaState.START )
+		{
 			m_Lifetime -= TICK_RATE;
-
-		
-		//Print(m_AvalancheState);
-		//Print(m_Lifetime);
+		}
 		int insiders =  m_Trigger.GetInsiders().Count();
-		//Print("insiders =" + insiders);
-		
+
 		if ( insiders > 0 && m_AvalancheState == AvalancheAreaState.READY )
 		{
 			int random100 = Math.RandomInt(0, 100);
 			int chance = 95 - insiders;
 			if (random100 > chance)
 			{
-				
 				CalculateEmittorPositions(GetWorldPosition(), m_Radius, m_InnerRings, m_InnerSpacing, m_OuterRingToggle, m_OuterSpacing, m_OuterRingOffset);
 				if ( m_EmitterPoints && m_EmitterPoints.Count() > 0)
 				{
@@ -105,15 +102,32 @@ class AvalancheArea_dynamic : AvalancheArea_base
 						}
 						iterator++;			
 					}
+					if (m_EmitterPoints)
+						delete m_EmitterPoints;
 				}
 				Print("random passed");
 				SetDecayState( AvalancheAreaState.START );
-				return;
 			}
+			else
+				SetSynchDirty();
+			
+			return;
 		}
 
-		if (  insiders > 0 && m_AvalancheState == AvalancheAreaState.LIVE )
+		else if ( m_AvalancheState == AvalancheAreaState.READY )
 		{
+			SetSynchDirty();
+			return;
+		}
+
+		if ( m_AvalancheState == AvalancheAreaState.START )
+		{
+			SetDecayState( AvalancheAreaState.LIVE );
+		}
+
+		if ( m_AvalancheState == AvalancheAreaState.LIVE )
+		{
+			SetSynchDirty();
 		}
 		
 		if ( GetRemainingTime() < FINISH_DECAY_LIFETIME)
@@ -125,7 +139,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 			}
 			SetDecayState( AvalancheAreaState.DECAY_END );
 		}
-		else if ( GetRemainingTime() < START_DECAY_LIFETIME + START_DECAY_LIFETIME )
+		else if ( GetRemainingTime() < START_DECAY_LIFETIME + FINISH_DECAY_LIFETIME )
 		{
 			// The first state of decay, slight reduction in particle density and size
 			iterator = 0;
@@ -137,11 +151,28 @@ class AvalancheArea_dynamic : AvalancheArea_base
 			}
 			SetDecayState( AvalancheAreaState.DECAY_START );
 		}
-		if (m_Lifetime <= 0)
+		if (m_Lifetime <= ( 0 - COOLDOWN_TIME ))
 		{
 			GetGame().ObjectDelete( m_AvalancheSound );
+			if (m_DamageAreas)
+			{
+				m_DamageAreas.Clear();
+				delete m_DamageAreas;	
+			}
+			if (m_ToxicClouds)
+			{
+				m_ToxicClouds.Clear();
+				delete m_ToxicClouds;
+			}
+			m_Lifetime = LIFETIME_DEFAULT;
+			SetDecayState( AvalancheAreaState.READY );
+			return;
+		}
+		else if (m_Lifetime <= 0)
+		{
 			SetDecayState( AvalancheAreaState.STOP );
 		}
+
 	}
 	
 	// Set the new state of the Area
@@ -183,10 +214,12 @@ class AvalancheArea_dynamic : AvalancheArea_base
 	override void InitZone()
 	{
 		Print("InitZone");
-		m_TimerTick = new Timer;
+		if (!m_TimerTick)
+			m_TimerTick = new Timer;
 		m_TimerTick.Run(TICK_RATE, this, "Tick", NULL, true);
-		m_AvalancheState = AvalancheAreaState.READY;
-		SetSynchDirty();
+		SetDecayState( AvalancheAreaState.READY );
+		//m_AvalancheState = AvalancheAreaState.READY;
+		//SetSynchDirty();
 		
 		super.InitZone();
 	}
@@ -209,7 +242,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 			m_ToxicClouds = new array<Particle>;
 
 		// We spawn VFX on client
-		PlaceParticles( GetWorldPosition(), m_Radius, m_InnerRings, m_InnerSpacing, m_OuterRingToggle, m_OuterSpacing, m_OuterRingOffset, m_ParticleID );		
+		PlaceParticles( GetWorldPosition(), m_Radius, m_InnerRings, m_InnerSpacing, m_OuterRingToggle, m_OuterSpacing, m_OuterRingOffset, m_ParticleID );	
 	}
 
 	override void CreateTrigger( vector pos, int radius )
@@ -257,8 +290,7 @@ class AvalancheArea_dynamic : AvalancheArea_base
 			case AvalancheAreaState.START:
 				Print("Avalanche START");
 				m_Lifetime = LIFETIME_DEFAULT;
-				InitZone();
-				SetDecayState( AvalancheAreaState.LIVE );
+				InitZoneClient();
 				break;
 
 			case AvalancheAreaState.LIVE:
@@ -273,10 +305,10 @@ class AvalancheArea_dynamic : AvalancheArea_base
 				{
 					loopIteration++;
 
-					if (loopIteration > 4)
+					if (loopIteration > 5)
 						break;
 
-					if (loopIteration <= 4)
+					if (loopIteration <= 5)
 						particleA.Stop();
 				}
 				break;
@@ -302,10 +334,18 @@ class AvalancheArea_dynamic : AvalancheArea_base
 				{
 					particleC.Stop();
 				}
-				delete m_EmitterPoints;
-				delete m_DamageAreas;
-				//delete m_AvalancheSound;
-				delete m_StartupTimer;
+				if (m_DamageAreas)
+				{
+					m_DamageAreas.Clear();
+					delete m_DamageAreas;	
+				}
+				if (m_ToxicClouds)
+				{
+					m_ToxicClouds.Clear();
+					delete m_ToxicClouds;
+				}
+				if (m_StartupTimer)
+					delete m_StartupTimer;
 				break;
 
 			default:
