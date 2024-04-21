@@ -223,8 +223,6 @@ class AvalancheArea_base : EffectArea
 		ParticlePropertiesArray props = new ParticlePropertiesArray();
 		azwGameTools  GameTools = azwGameTools.Get();
 		
-        int k = 0;
-		
 		vector partPos = pos;
 		vector partPos2 = pos;
 		vector partPos3 = pos;

@@ -9,7 +9,7 @@ modded class SEffectManager
 		EffectSound sound_A;
         bool loop = true;
 		sound_A = CreateSound(sound_set, parent_object.GetPosition(), fade, fade, loop);		
-		azwPrepareSound(sound_A, parent_object, false);
+		azwPrepareSound(sound_A, parent_object);
 		sound_A.SoundPlay();
 		return sound_A;
 	}
@@ -19,7 +19,7 @@ modded class SEffectManager
 		EffectSound sound_A;
         bool loop = true;
 		sound_A = CreateSound(sound_set, parent_object.GetPosition(), fade_in, fade_out, loop);		
-		azwPrepareSound(sound_A, parent_object, false);
+		azwPrepareSound(sound_A, parent_object);
 		sound_A.SoundPlay();
 		return sound_A;
 	}

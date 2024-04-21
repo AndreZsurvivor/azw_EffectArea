@@ -26,6 +26,7 @@ class azw_SoundLoop
 
     void azw_SoundLoop()
     {
+		Print("soundloop constructed");
         m_LoopTimer = new Timer();
 		m_TimerStop = new Timer();
 		m_TimerDelay = new Timer();
@@ -42,7 +43,7 @@ class azw_SoundLoop
 		delete m_TimerFadeIn;
     }
 
-    void Init(string sound_set, Object parent_object, float length, float fade)
+    void Init(string sound_set, Object parent_object, float length, float fade = 2)
     {
         m_SoundSet = sound_set;
         m_ParentObject = parent_object;
